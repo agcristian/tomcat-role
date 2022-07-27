@@ -1,0 +1,20 @@
+# Systemd unit file for tomcat
+[Unit]
+Description=Tomcat 8.0 servlet container para CentOS 7
+After=syslog.target network.target
+
+[Service]
+Type=forking
+
+Environment="JAVA_HOME=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.261-2.6.22.2.el7_8.x86_64"
+Environment="CATALINA_BASE=/home/remote_user/opt/tomcat"
+Environment="CATALINA_HOME=/home/remote_user/opt/tomcat"
+Environment="CATALINA_PID=/home/remote_user/opt/tomcat/temp/tomcat.pid"
+Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+Environment="JAVA_OPTS=-Djava.awt.headless=true -Djava.security.egd=file:/dev/./urandom -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+
+ExecStart=/home/remote_user/opt/tomcat/bin/startup.sh
+ExecStop=/home/remote_user/opt/tomcat/bin/shutdown.sh
+
+[Install]
+WantedBy=multi-user.target

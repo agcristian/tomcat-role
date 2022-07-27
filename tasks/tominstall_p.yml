@@ -1,0 +1,52 @@
+    - name: wget yum
+      ansible.builtin.yum:
+        name: wget
+        state: latest
+      ignore_errors: yes
+
+    - name: java
+      ansible.builtin.yum:
+        name: java-1.7.0-openjdk-devel
+        state: latest
+
+    - name: make tom directory
+      file:
+        path: /home/remote_user/opt/tomcat/
+        owner: remote_user
+        group: remote_user
+        mode: 0755
+        state: directory
+
+    - name: download tomcat
+      become: yes
+      get_url:
+        url: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz"
+        dest: /home/remote_user/opt/tomcat/
+        mode: 0755
+        checksum: "sha512:729387275cce4a0900289722f6c70ebcf7aee924af671b110b8ea8577fd6d045d47f17d526c8db5fd41c8590102e7f5100e95e89f7fd511b941565812ecbed35"
+
+    - name: Extract tomcat
+      unarchive:
+        src: /home/remote_user/opt/tomcat/apache-tomcat-8.5.81.tar.gz
+        dest: /home/remote_user/opt/tomcat/
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: Set unpacked archives to remote_user
+      file:
+        path: /home/remote_user/opt/tomcat/
+        owner: remote_user
+        group: remote_user
+        mode: "u+rwx,g+rx,o=rx"
+        recurse: yes
+
+    - name: Install remote_user systemd unit file
+      template:
+        src: tomcat-unit.j2
+        dest: /etc/systemd/system/tomcat.service
+
+    - name: Start service
+      systemd:
+        state: started
+        name: "tomcat"
+        daemon_reload: yes
