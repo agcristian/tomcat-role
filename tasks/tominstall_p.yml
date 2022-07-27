@@ -1,6 +1,4 @@
- - block :
- 
-   - name: wget yum
+    - name: wget yum
       ansible.builtin.yum:
         name: wget
         state: latest
@@ -52,5 +50,3 @@
         state: started
         name: "tomcat"
         daemon_reload: yes
-        
-    become: yes
