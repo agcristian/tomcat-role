@@ -14,7 +14,7 @@
         path: /home/remote_user/opt/tomcat/
         owner: remote_user
         group: remote_user
-        mode: 0755
+        mode: 0775
         state: directory
 
     - name: download tomcat
@@ -22,7 +22,7 @@
       get_url:
         url: "https://dlcdn.apache.org/tomcat/tomcat-8/v8.5.81/bin/apache-tomcat-8.5.81.tar.gz"
         dest: /home/remote_user/opt/tomcat/
-        mode: 0755
+        mode: 0775
         checksum: "sha512:729387275cce4a0900289722f6c70ebcf7aee924af671b110b8ea8577fd6d045d47f17d526c8db5fd41c8590102e7f5100e95e89f7fd511b941565812ecbed35"
 
     - name: Extract tomcat
@@ -37,15 +37,37 @@
         path: /home/remote_user/opt/tomcat/
         owner: remote_user
         group: remote_user
-        mode: "u+rwx,g+rx,o=rx"
+        mode: "u+rwx,g+rwx,o=rx"
         recurse: yes
 
     - name: Install remote_user systemd unit file
       template:
         src: tomcat-unit.j2
         dest: /etc/systemd/system/tomcat.service
-
-    - name: Start service
+    
+    - name: Changing serverxml conf 8181 adress ipv4
+      ansible.builtin.lineinfile:
+        path: /home/remote_user/opt/tomcat/conf/server.xml
+        search_string: '<Connector port="8080" protocol="HTTP/1.1"'
+        insertafter: '               address="0.0.0.0"'
+        line: '    <Connector port="8181" protocol="HTTP/1.1"'
+        
+    - name: Install remote_user systemd unit file
+      template:
+        src: tomcat-unit.j2
+        dest: /etc/systemd/system/tomcat.service
+        
+    - name: Install remote_user systemd unit file
+      template:
+        src: java_home.j2
+        dest: /etc/profile.d/java_home.sh
+        
+    - name: Source java home path script
+      ansible.builtin.shell: source java_home.sh
+      args:
+        chdir: etc/profile.d/
+        
+    - name: Start Tom service
       systemd:
         state: started
         name: "tomcat"
