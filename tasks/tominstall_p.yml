@@ -50,7 +50,7 @@
         path: /home/remote_user/opt/tomcat/conf/server.xml
         regexp: '<Connector port="8080" protocol="HTTP/1.1"'
         insertafter: '               address="0.0.0.0"'
-        line:    <Connector port="8181" protocol="HTTP/1.1
+        line:    <Connector port="8181" protocol="HTTP/1.1"
         
     - name: Install remote_user systemd unit file
       template:
