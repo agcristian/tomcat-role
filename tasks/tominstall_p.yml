@@ -48,16 +48,16 @@
     - name: Changing serverxml conf 8181 adress ipv4
       ansible.builtin.lineinfile:
         path: /home/remote_user/opt/tomcat/conf/server.xml
-        search_string: '<Connector port="8080" protocol="HTTP/1.1"'
+        regexp: '<Connector port="8080" protocol="HTTP/1.1"'
         insertafter: '               address="0.0.0.0"'
-        line: '    <Connector port="8181" protocol="HTTP/1.1"'
+        line:    <Connector port="8181" protocol="HTTP/1.1
         
     - name: Install remote_user systemd unit file
       template:
         src: tomcat-unit.j2
         dest: /etc/systemd/system/tomcat.service
         
-    - name: Install remote_user systemd unit file
+    - name: Export Java home variable
       template:
         src: java_home.j2
         dest: /etc/profile.d/java_home.sh
