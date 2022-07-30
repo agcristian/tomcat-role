@@ -65,7 +65,7 @@
     - name: Source java home path script
       ansible.builtin.shell: source java_home.sh
       args:
-        chdir: etc/profile.d/
+        chdir: /etc/profile.d/
         
     - name: Start Tom service
       systemd:
